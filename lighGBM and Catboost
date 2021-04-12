@@ -1,0 +1,91 @@
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X,y,train_size = 0.90, random_state =42)
+X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, train_size = 0.85, random_state =42)
+categorical_features_indices = np.where(X.dtypes != np.float)[0]
+
+#catboost
+import catboost
+from catboost import MetricVisualizer, Pool, CatBoostRegressor, cv
+
+
+train_pool = Pool(data=X_train, label=y_train, cat_features=categorical_features_indices)
+
+val_pool = Pool(data=X_val, label=y_val, cat_features=categorical_features_indices)
+
+# No need to init here
+test_pool = Pool(data=X_test, label=y_test, cat_features=categorical_features_indices)
+
+#params
+params = {
+   'iterations':900,
+   'loss_function': 'RMSE',
+   'learning_rate': 0.0109, #1 0.102,
+   'depth': 6,
+   'l2_leaf_reg': 6,
+   
+   'border_count': 7,
+   'thread_count': 7,
+   
+   'bagging_temperature': 2,
+   'random_strength': 2.23,
+   'colsample_bylevel': 0.85,
+   
+   'custom_metric': ['MAPE', 'R2'], #  'MAPE'] # R2, Quantile,
+   'eval_metric': 'R2', # 'MAPE', # Overfitting detection if `use_best_model` is enabled
+   'random_seed': 41,
+   
+   # 'max_ctr_complexity': 2,
+   #'logging_level': 'Silent',
+   'use_best_model':False # Takes
+}
+
+
+# specify the training parameters
+reg_model = CatBoostRegressor(**params)
+
+
+reg_model.fit(train_pool, eval_set=val_pool, plot=True, verbose=100)
+importances = reg_model.get_feature_importance(prettified=True)
+X_test['predict_qty']=reg_model.predict(X_test)
+
+import pickle
+with open ('reg_model21dec','wb') as f:
+  pickle.dump(reg_model21dec,f)
+  
+with open ('reg_model21dec','rb') as f:
+model =pickle.load(f)
+ 
+ 
+ 
+#lightGBM
+import lightgbm as lgb
+
+# lgb hyper-parameters
+params = {'metric': 'rmse',
+          'num_leaves': 255,
+          'learning_rate': 0.005,
+          'feature_fraction': 0.75,
+          'bagging_fraction': 0.75,
+          'bagging_freq': 5,
+          'force_col_wise' : True,
+          'random_state': 10}
+
+cat_features = ['shop_id', 'city', 'item_category_id', 'category', 'month']
+
+# lgb train and valid dataset
+dtrain = lgb.Dataset(X_train, y_train)
+dvalid = lgb.Dataset(X_valid, y_valid)
+ 
+# Train LightGBM model
+lgb_model = lgb.train(params=params,
+                      train_set=dtrain,
+                      num_boost_round=1500,
+                      valid_sets=(dtrain, dvalid),
+                      early_stopping_rounds=150,
+                      categorical_feature=cat_features,
+                      verbose_eval=100) 
+
+preds = lgb_model.predict(X_test).clip(0,20)
+
+submission['item_cnt_month'] = preds
+submission.to_csv('submission.csv', index=False)
