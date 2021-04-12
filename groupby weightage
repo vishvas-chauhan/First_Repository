@@ -1,0 +1,2167 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Quality.ipynb",
+      "provenance": [],
+      "authorship_tag": "ABX9TyObOtQ3T3r8h/+xxwd045kE",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/vishvas-chauhan/First_Repository/blob/master/groupby%20weightage\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "GO9MZy7rf2cF"
+      },
+      "source": [
+        "import matplotlib.pyplot as plt\n",
+        "import seaborn as sns\n",
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "\n",
+        "import gspread\n",
+        "import gspread_dataframe as gd\n",
+        "from google.colab import auth\n",
+        "auth.authenticate_user()\n",
+        "\n",
+        "import gspread\n",
+        "from oauth2client.client import GoogleCredentials\n",
+        "\n",
+        "gc = gspread.authorize(GoogleCredentials.get_application_default())"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "q0i6HkG9UyX9"
+      },
+      "source": [
+        "##quality"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "EJWI9pB6f48R"
+      },
+      "source": [
+        "ss21FS = gc.open(\"Full Production\").worksheet(\"ss21FS\")\n",
+        "df_ss21FS = gd.get_as_dataframe(ss21FS)\n",
+        "\n",
+        "SS21SSh = gc.open(\"Full Production\").worksheet(\"SS21SSh\")\n",
+        "df_SS21SSh = gd.get_as_dataframe(SS21SSh)\n",
+        "\n",
+        "f20main = gc.open(\"Full Production\").worksheet(\"f20main\")\n",
+        "df_f20main = gd.get_as_dataframe(f20main)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "5rNlswCmf4_h"
+      },
+      "source": [
+        "selected_col=['Style','Product ID','Season','Product Category 1','Product Category 2','Product Category 3','Product Category 5','Fabric','Colour','Sizes','Manufacturer','Manufacturer Country','Textile Content',\n",
+        "               'Product Category 4','Labels','Image Path']"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "5j_zxOddgJX_"
+      },
+      "source": [
+        "df_ss21FS=df_ss21FS[selected_col]\n",
+        "df_SS21SSh=df_SS21SSh[selected_col]\n",
+        "df_f20main=df_f20main[selected_col]"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "WskXnAeEgKU5",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "22ce18ef-73a1-4472-bd45-c9b132fdd020"
+      },
+      "source": [
+        "frames = [df_ss21FS,df_SS21SSh,df_f20main]\n",
+        "result = pd.concat(frames)\n",
+        "result['Season'].value_counts()"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "SS21 // SECOND SHOWROOM            259\n",
+              "FW20 // MAIN MIND MELANGE MOTOR    256\n",
+              "SS21 // FIRST SHOWROOM             169\n",
+              "Name: Season, dtype: int64"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 5
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "hTq_VNnwgQxd",
+        "outputId": "282566ab-d509-4a77-fecb-5aa71af3d68e"
+      },
+      "source": [
+        "result = pd.concat(frames)\n",
+        "result['Season'].value_counts()"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "SS21 // SECOND SHOWROOM            259\n",
+              "FW20 // MAIN MIND MELANGE MOTOR    256\n",
+              "SS21 // FIRST SHOWROOM             169\n",
+              "Name: Season, dtype: int64"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 6
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "3u61Ph4mgUQB",
+        "outputId": "b4133ff4-ff6d-447d-909f-1b937fa44eaa"
+      },
+      "source": [
+        "result=result.dropna(axis=0,how='all')\n",
+        "print(result.shape)"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "(684, 16)\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "zHP3Q2KOgVGt",
+        "outputId": "6ddd971b-cdc4-4ab3-f8f7-2c0b87a1cbc9"
+      },
+      "source": [
+        "result['Season'].value_counts()"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "12                                 259\n",
+              "FW20 // MAIN MIND MELANGE MOTOR    256\n",
+              "SS21 // FIRST SHOWROOM             169\n",
+              "Name: Season, dtype: int64"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 14
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "a4uAJDVbTpMc"
+      },
+      "source": [
+        "#result.loc[result['Season'] =='SS21 // SECOND SHOWROOM', 'Season'] = '121'"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "pzvHgRWRr9Ho"
+      },
+      "source": [
+        "#result['Labels'].value_counts(),result['b'].value_counts()"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "10yjrgYwjniD"
+      },
+      "source": [
+        "result['Labels']=result['Labels'].astype(str)\n",
+        "#result['b']=result['b'].astype(str)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "G7vjF28TqHDo"
+      },
+      "source": [
+        "result['z']=result['Labels'].apply(lambda x:x.split('-')[0])"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "CgS6OUMtx4Em"
+      },
+      "source": [
+        "#result['z']=result['z'].str.get(0)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Vqb_0AuEm64i",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "eb74d18f-3fde-43b9-ca3d-02bb2ed8cf74"
+      },
+      "source": [
+        "result['z'].value_counts()"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "nan    629\n",
+              "IN      29\n",
+              "EX      18\n",
+              "INX      7\n",
+              "CF       1\n",
+              "Name: z, dtype: int64"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 60
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "U_w5iqxlyOss"
+      },
+      "source": [
+        "#result['Labels']=result['Labels'].fillna('XX-XX')"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "QfZTbY2uZhch"
+      },
+      "source": [
+        "result['a']=result['Labels'].apply(lambda x:x.split('-')[1:])\n"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "dSbIZRnAz09c"
+      },
+      "source": [
+        "result['a']=result['a'].str.get(0)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "m7iJFAOahfoj"
+      },
+      "source": [
+        "result['b']=result['Labels'].apply(lambda x:x.split('-')[2:])"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "QuuuT07gz-E-"
+      },
+      "source": [
+        "result['b']=result['b'].str.get(0)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "xCOo3idPhgP6"
+      },
+      "source": [
+        "result['c']=result['Labels'].apply(lambda x:x.split('-')[3:])"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "kMnQNU5Ahm--"
+      },
+      "source": [
+        "result['c']=result['c'].str.get(0)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "WiMIKwjmtY3g"
+      },
+      "source": [
+        "result['d']=result['Labels'].apply(lambda x:x.split('-')[4:])"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "0WYwB8DFtZ-A"
+      },
+      "source": [
+        "result['d']=result['d'].str.get(0)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "ZH3I5J6QyE7R"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "G3nNC_5IyBcp"
+      },
+      "source": [
+        "inex= [result['z'].str.contains(\"INX\")== True,result['z'].str.contains(\"EX\")== True,result['z'].str.contains(\"IN\")== True,result['z'].str.contains(\"CF\")== True]\n",
+        "inexchoice=['BOTH','Factory','Internal','Customer Fault']\n",
+        "result['Int/Ext']=np.select(inex,inexchoice,default='no issue')"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "4cceGlpwKFOZ",
+        "outputId": "a122746f-e889-44a1-8254-db0d939263e5"
+      },
+      "source": [
+        "result['z'].value_counts()"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "nan    629\n",
+              "IN      29\n",
+              "EX      18\n",
+              "INX      7\n",
+              "CF       1\n",
+              "Name: z, dtype: int64"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 71
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "c6STeunYo8pN"
+      },
+      "source": [
+        "con_main= [result['a'].str.contains(\"CR\")== True,result['a'].str.contains(\"PR\")== True,result['a'].str.contains(\"DV\")== True]\n",
+        "choice=['Client Return','Production','Development']\n",
+        "result['main']=np.select(con_main,choice,default='no issue')"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Jllu6FOMtm7V"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "8WHXd3ETr27I"
+      },
+      "source": [
+        "con_sub= [result['b'].str.contains(\"FD\")==True,\n",
+        "          result['b'].str.contains(\"FS\")==True,\n",
+        "          result['b'].str.contains(\"FP\")==True,\n",
+        "          result['b'].str.contains(\"FY\")==True,\n",
+        "          result['b'].str.contains(\"FR\")==True,\n",
+        "          result['b'].str.contains(\"FH\")==True,\n",
+        "          result['b'].str.contains(\"FE\")==True,\n",
+        "          result['b'].str.contains(\"AB\")==True,\n",
+        "          result['b'].str.contains(\"AZ\")==True,\n",
+        "          result['b'].str.contains(\"AC\")==True,\n",
+        "          result['b'].str.contains(\"AM\")==True,\n",
+        "          result['b'].str.contains(\"AL\")==True,\n",
+        "          result['b'].str.contains(\"BC\")==True,\n",
+        "          result['b'].str.contains(\"BZ\")==True,\n",
+        "          result['b'].str.contains(\"BB\")==True,\n",
+        "          result['b'].str.contains(\"TS\")==True,\n",
+        "          result['b'].str.contains(\"TE\")==True,\n",
+        "          result['b'].str.contains(\"NL\")==True,\n",
+        "          result['b'].str.contains(\"NB\")==True,\n",
+        "          result['b'].str.contains(\"NI\")==True,\n",
+        "          result['b'].str.contains(\"NF\")==True,\n",
+        "          result['b'].str.contains(\"WS\")==True]\n",
+        "choice2=['Fabric Damage','Fabric Staining','Fabric Print Finish','Fabric Dyeing','Fabric Recycled','Fabric Shrinkage','Fabric Enlargement',\n",
+        "         'Garment Acc Button','Garment Acc Zipper','Garment Acc Chain','Garment Acc MS Closures','Garment Acc Label',\n",
+        "         'Bags Chain Straps','Bags Zipper','Bags Ball Bags','Pattern Shrinkage','Pattern Enlargement',\n",
+        "         'Finishing Loose','Finishing Breakage','Finishing Inconsistent','Techfile not followed','Shoe size wrong']\n",
+        "result['sub_details']=np.select(con_sub,choice2,default='no issue')"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "zTNzQmVuapHz"
+      },
+      "source": [
+        "cond_c= [result['c'].str.contains(\"FD\")==True,\n",
+        "          result['c'].str.contains(\"FS\")==True,\n",
+        "          result['c'].str.contains(\"FP\")==True,\n",
+        "          result['c'].str.contains(\"FY\")==True,\n",
+        "          result['c'].str.contains(\"FR\")==True,\n",
+        "          result['c'].str.contains(\"FH\")==True,\n",
+        "          result['c'].str.contains(\"FE\")==True,\n",
+        "          result['c'].str.contains(\"AB\")==True,\n",
+        "          result['c'].str.contains(\"AZ\")==True,\n",
+        "          result['c'].str.contains(\"AC\")==True,\n",
+        "          result['c'].str.contains(\"AM\")==True,\n",
+        "          result['c'].str.contains(\"AL\")==True,\n",
+        "          result['c'].str.contains(\"BC\")==True,\n",
+        "          result['c'].str.contains(\"BZ\")==True,\n",
+        "          result['c'].str.contains(\"BB\")==True,\n",
+        "          result['c'].str.contains(\"TS\")==True,\n",
+        "          result['c'].str.contains(\"TE\")==True,\n",
+        "          result['c'].str.contains(\"NL\")==True,\n",
+        "          result['c'].str.contains(\"NB\")==True,\n",
+        "          result['c'].str.contains(\"NI\")==True,\n",
+        "          result['c'].str.contains(\"NF\")==True,\n",
+        "          result['c'].str.contains(\"WS\")==True]\n",
+        "choice_c=['Fabric Damage','Fabric Staining','Fabric Print Finish','Fabric Dyeing','Fabric Recycled','Fabric Shrinkage','Fabric Enlargement',\n",
+        "         'Garment Acc Button','Garment Acc Zipper','Garment Acc Chain','Garment Acc MS Closures','Garment Acc Label',\n",
+        "         'Bags Chain Straps','Bags Zipper','Bags Ball Bags','Pattern Shrinkage','Pattern Enlargement',\n",
+        "         'Finishing Loose','Finishing Breakage','Finishing Inconsistent','Techfile not followed','Shoe size wrong']\n",
+        "result['c_details']=np.select(cond_c,choice_c,default='no issue')"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Z_wVpaDt1-sB"
+      },
+      "source": [
+        "cond_d= [result['d'].str.contains(\"FD\")==True,\n",
+        "          result['d'].str.contains(\"FS\")==True,\n",
+        "          result['d'].str.contains(\"FP\")==True,\n",
+        "          result['d'].str.contains(\"FY\")==True,\n",
+        "          result['d'].str.contains(\"FR\")==True,\n",
+        "          result['d'].str.contains(\"FH\")==True,\n",
+        "          result['d'].str.contains(\"FE\")==True,\n",
+        "          result['d'].str.contains(\"AB\")==True,\n",
+        "          result['d'].str.contains(\"AZ\")==True,\n",
+        "          result['d'].str.contains(\"AC\")==True,\n",
+        "          result['d'].str.contains(\"AM\")==True,\n",
+        "          result['d'].str.contains(\"AL\")==True,\n",
+        "          result['d'].str.contains(\"BC\")==True,\n",
+        "          result['d'].str.contains(\"BZ\")==True,\n",
+        "          result['d'].str.contains(\"BB\")==True,\n",
+        "          result['d'].str.contains(\"TS\")==True,\n",
+        "          result['d'].str.contains(\"TE\")==True,\n",
+        "          result['d'].str.contains(\"NL\")==True,\n",
+        "          result['d'].str.contains(\"NB\")==True,\n",
+        "          result['d'].str.contains(\"NI\")==True,\n",
+        "          result['d'].str.contains(\"NF\")==True,\n",
+        "          result['d'].str.contains(\"WS\")==True]\n",
+        "choice_d=['Fabric Damage','Fabric Staining','Fabric Print Finish','Fabric Dyeing','Fabric Recycled','Fabric Shrinkage','Fabric Enlargement',\n",
+        "         'Garment Acc Button','Garment Acc Zipper','Garment Acc Chain','Garment Acc MS Closures','Garment Acc Label',\n",
+        "         'Bags Chain Straps','Bags Zipper','Bags Ball Bags','Pattern Shrinkage','Pattern Enlargement',\n",
+        "         'Finishing Loose','Finishing Breakage','Finishing Inconsistent','Techfile not followed','Shoe size wrong']\n",
+        "result['d_details']=np.select(cond_d,choice_d,default='no issue')"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "qWMQvUFm2IeU",
+        "outputId": "3294fc56-5309-43c7-bd10-a293112659e0"
+      },
+      "source": [
+        "result.columns"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "Index(['Style', 'Product ID', 'Season', 'Product Category 1',\n",
+              "       'Product Category 2', 'Product Category 3', 'Product Category 5',\n",
+              "       'Fabric', 'Colour', 'Sizes', 'Manufacturer', 'Manufacturer Country',\n",
+              "       'Textile Content', 'Product Category 4', 'Labels', 'Image Path', 'z',\n",
+              "       'a', 'b', 'c', 'd', 'Int/Ext', 'main', 'sub_details', 'c_details',\n",
+              "       'd_details'],\n",
+              "      dtype='object')"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 76
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "7mZlr7-D2am7"
+      },
+      "source": [
+        "df_quality= result[['Style', 'Product ID', 'Season', 'Product Category 1',\n",
+        "       'Product Category 2', 'Product Category 3', 'Product Category 5',\n",
+        "       'Fabric', 'Colour', 'Sizes', 'Manufacturer', 'Manufacturer Country',\n",
+        "       'Textile Content', 'Product Category 4', 'Labels', 'Image Path','Int/Ext','main', 'sub_details']]"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Q_f94d7T2i-Q"
+      },
+      "source": [
+        "df_a= result[['Style', 'Product ID', 'Season', 'Product Category 1',\n",
+        "       'Product Category 2', 'Product Category 3', 'Product Category 5',\n",
+        "       'Fabric', 'Colour', 'Sizes', 'Manufacturer', 'Manufacturer Country',\n",
+        "       'Textile Content', 'Product Category 4', 'Labels', 'Image Path','Int/Ext','main', 'c_details']]"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ipkGcrse2_Gc",
+        "outputId": "f83165e3-afd6-492e-da3f-51c661d53861"
+      },
+      "source": [
+        "df_a.rename(columns={'c_details':'sub_details'}, inplace=True)"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "/usr/local/lib/python3.7/dist-packages/pandas/core/frame.py:4308: SettingWithCopyWarning: \n",
+            "A value is trying to be set on a copy of a slice from a DataFrame\n",
+            "\n",
+            "See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy\n",
+            "  errors=errors,\n"
+          ],
+          "name": "stderr"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "IIJZOgEj3WxS"
+      },
+      "source": [
+        "#df_b.sub_details.value_counts()#"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "d1TMCnJz3c6D"
+      },
+      "source": [
+        "df_a=df_a[df_a['sub_details']!='no issue']"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "HJsoy9GC7McU"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "2Nbekq5h2ujb"
+      },
+      "source": [
+        "df_b=result[['Style', 'Product ID', 'Season', 'Product Category 1',\n",
+        "       'Product Category 2', 'Product Category 3', 'Product Category 5',\n",
+        "       'Fabric', 'Colour', 'Sizes', 'Manufacturer', 'Manufacturer Country',\n",
+        "       'Textile Content', 'Product Category 4', 'Labels', 'Image Path','Int/Ext','main', 'd_details']]"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "vWQlkQfb7RnI",
+        "outputId": "e742ddd1-5323-43d4-dbc7-859ceb57857e"
+      },
+      "source": [
+        "df_b.rename(columns={'d_details':'sub_details'}, inplace=True)"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "/usr/local/lib/python3.7/dist-packages/pandas/core/frame.py:4308: SettingWithCopyWarning: \n",
+            "A value is trying to be set on a copy of a slice from a DataFrame\n",
+            "\n",
+            "See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy\n",
+            "  errors=errors,\n"
+          ],
+          "name": "stderr"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "uDaRj2Hm3n9p"
+      },
+      "source": [
+        "df_b=df_b[df_b['sub_details']!='no issue']"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Mxu87cXg21w5"
+      },
+      "source": [
+        "frame_quality = [df_quality,df_b,df_a]"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "e21wDSsS7osU",
+        "outputId": "52e7e15b-7185-4017-cecb-1f65674a7cb9"
+      },
+      "source": [
+        "df_quality.shape,df_b.shape,df_a.shape"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "((684, 19), (1, 19), (7, 19))"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 86
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "PgZ1P4JH8u-p"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "QLTHrVb2ff2A",
+        "outputId": "b4dfc6b6-d2e8-436c-ddac-13e90b97eee1"
+      },
+      "source": [
+        "f_quality = pd.concat(frame_quality)\n",
+        "f_quality['Season'].value_counts()\n"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "SS21 // SECOND SHOWROOM            263\n",
+              "FW20 // MAIN MIND MELANGE MOTOR    259\n",
+              "SS21 // FIRST SHOWROOM             170\n",
+              "Name: Season, dtype: int64"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 87
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "52PmSfBqz1wh",
+        "outputId": "87d73984-7331-46a9-c383-245997b2a076"
+      },
+      "source": [
+        "f_quality.sub_details"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "0                     no issue\n",
+              "1                     no issue\n",
+              "2                     no issue\n",
+              "3                     no issue\n",
+              "4                     no issue\n",
+              "                ...           \n",
+              "67               Fabric Dyeing\n",
+              "207    Garment Acc MS Closures\n",
+              "32         Pattern Enlargement\n",
+              "84          Garment Acc Zipper\n",
+              "209            Finishing Loose\n",
+              "Name: sub_details, Length: 692, dtype: object"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 88
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "cm-0e1vJ7xXS",
+        "outputId": "feec4db8-def0-41c9-d75a-fe1c2bb1be9a"
+      },
+      "source": [
+        "f_quality.shape"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "(692, 19)"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 89
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "drpw9czM4P5S"
+      },
+      "source": [
+        "#f_quality=f_quality.dropna(axis=0,how='all')\n",
+        "#f_quality=f_quality.drop_duplicates()"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "3-BlHmDQ8kIO"
+      },
+      "source": [
+        "cond_co= [f_quality.sub_details.str.contains(\"Fabric\")==True,\n",
+        "          f_quality.sub_details.str.contains(\"Garment Acc\")==True,\n",
+        "          f_quality.sub_details.str.contains(\"Bags\")==True,\n",
+        "          f_quality.sub_details.str.contains(\"Pattern\")==True,\n",
+        "          f_quality.sub_details.str.contains(\"Techfile\")==True,\n",
+        "          f_quality.sub_details.str.contains(\"Finishing\")==True,\n",
+        "          f_quality.sub_details.str.contains(\"Shoe\")==True,]\n",
+        "          \n",
+        "          \n",
+        "choice_co=['Fabric','Garment Acc','Bags','Pattern','Techfile','Finishing','Shoe']\n",
+        "f_quality['co_main']=np.select(cond_co,choice_co,default='no issue')"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "hsfguRMDwdJE"
+      },
+      "source": [
+        "Concateall = gc.open(\"Quality_codes\").worksheet(\"Quality data\")\n",
+        "#df_Concateall = gd.get_as_dataframe(Concateall)\n",
+        "#updated = df_Concateall.append(result)\n",
+        "\n",
+        "gd.set_with_dataframe(Concateall, f_quality)\n"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Xl-fvRN1ra_E"
+      },
+      "source": [
+        "stop"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "Ouy4L0LFU3sN"
+      },
+      "source": [
+        "## nomen\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "u8fSk5y9gVZa"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "epqgJ0o0wJB4"
+      },
+      "source": [
+        "Sheet40 = gc.open(\"FW21 Nomenclatures Main\").worksheet(\"FW21 Nomenclature\")\n",
+        "df_Sheet40 = gd.get_as_dataframe(Sheet40)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "62-W2nDzyvfd"
+      },
+      "source": [
+        "df_Sheet40.columns=df_Sheet40.iloc[1]"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "5C_5vYA_wJEr"
+      },
+      "source": [
+        "df_Sheet40=df_Sheet40.iloc[2:]"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "SasJvgqPw4wq",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 261
+        },
+        "outputId": "4bb52f9c-d3c5-4408-a1eb-85053db48a03"
+      },
+      "source": [
+        "df_Sheet40.head(2)"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th>1</th>\n",
+              "      <th>Style</th>\n",
+              "      <th>Fabric</th>\n",
+              "      <th>Manufacturer</th>\n",
+              "      <th>Colour</th>\n",
+              "      <th>Description</th>\n",
+              "      <th>Drop</th>\n",
+              "      <th>Product Category</th>\n",
+              "      <th>Chef de produit</th>\n",
+              "      <th>Material Type</th>\n",
+              "      <th>Material Category</th>\n",
+              "      <th>RM ID</th>\n",
+              "      <th>Supplier</th>\n",
+              "      <th>RM Colour</th>\n",
+              "      <th>Real consumption</th>\n",
+              "      <th>Unit Cost (EUR)</th>\n",
+              "      <th>Besoin achats</th>\n",
+              "      <th>Total Cost (EUR)</th>\n",
+              "      <th>Sold Qties</th>\n",
+              "      <th>PO Number</th>\n",
+              "      <th>PO Date</th>\n",
+              "      <th>PO Quantity</th>\n",
+              "      <th>RM ETD</th>\n",
+              "      <th>Sending date</th>\n",
+              "      <th>Reception date at factory</th>\n",
+              "      <th>Qty status</th>\n",
+              "      <th>PPS launched date = tech file + pattern sent</th>\n",
+              "      <th>Ok prod</th>\n",
+              "      <th>0.5</th>\n",
+              "      <th>fabricdone</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>C042FW21M</td>\n",
+              "      <td>WOTPL0001</td>\n",
+              "      <td>PETROV TEXTILE</td>\n",
+              "      <td>00 BLACK</td>\n",
+              "      <td>=VLOOKUP(A4,'BDD drop-CDP'!A:D,2,)</td>\n",
+              "      <td>=VLOOKUP(A4,'BDD drop-CDP'!A:D,4,TRUE)</td>\n",
+              "      <td>RTW</td>\n",
+              "      <td>=VLOOKUP(A4,'BDD drop-CDP'!A:D,3,)</td>\n",
+              "      <td>PACKAGING</td>\n",
+              "      <td>PACKAGING</td>\n",
+              "      <td>P-POLYBAGHANGERSWITHLOGO55X160CM</td>\n",
+              "      <td>JOGUEL-ACESSÓRIOS TÊXTEIS UNIPESSOAL, LDA.</td>\n",
+              "      <td>NO COLOUR</td>\n",
+              "      <td>1</td>\n",
+              "      <td>0.65</td>\n",
+              "      <td>=ARRAYFORMULA(N4:N*R4:R)</td>\n",
+              "      <td>10.4</td>\n",
+              "      <td>16</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>16-Apr</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>RM not sent yet</td>\n",
+              "      <td>=ARRAYFORMULA(VLOOKUP(A4:A,IMPORTRANGE(\"https:...</td>\n",
+              "      <td>=ARRAYFORMULA(VLOOKUP(A4:A,IMPORTRANGE(\"https:...</td>\n",
+              "      <td>=ARRAYFORMULA(VLOOKUP(A4:A,'60percent'!A:D,4,0))</td>\n",
+              "      <td>NaN</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>3</th>\n",
+              "      <td>C042FW21M</td>\n",
+              "      <td>WOTPL0001</td>\n",
+              "      <td>PETROV TEXTILE</td>\n",
+              "      <td>00 BLACK</td>\n",
+              "      <td>=VLOOKUP(A5,'BDD drop-CDP'!A:D,2,)</td>\n",
+              "      <td>=VLOOKUP(A5,'BDD drop-CDP'!A:D,4,TRUE)</td>\n",
+              "      <td>RTW</td>\n",
+              "      <td>=VLOOKUP(A5,'BDD drop-CDP'!A:D,3,)</td>\n",
+              "      <td>PACKAGING</td>\n",
+              "      <td>PACKAGING</td>\n",
+              "      <td>P-HANGERSOSCINTRES</td>\n",
+              "      <td>SOS CINTRES</td>\n",
+              "      <td>FB 38 / JACKET-COAT</td>\n",
+              "      <td>1</td>\n",
+              "      <td>0.31</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>4.96</td>\n",
+              "      <td>16</td>\n",
+              "      <td>PO-03694</td>\n",
+              "      <td>3/8/2021</td>\n",
+              "      <td>105</td>\n",
+              "      <td>5-Apr</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>RM not sent yet</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>NaN</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "1      Style  ... fabricdone\n",
+              "2  C042FW21M  ...        NaN\n",
+              "3  C042FW21M  ...        NaN\n",
+              "\n",
+              "[2 rows x 29 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 261
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "yx_zXtOGw0bC"
+      },
+      "source": [
+        "#df_Sheet40.reset_index(drop=True)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "kNBLMK72zALa"
+      },
+      "source": [
+        "df=df_Sheet40[['Style','Qty status']]"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "84wZomtECU5q",
+        "outputId": "752173b8-5fde-4c62-dd92-f9fb3f98fc55"
+      },
+      "source": [
+        "df.head(2)"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th>1</th>\n",
+              "      <th>Style</th>\n",
+              "      <th>Qty status</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>C042FW21M</td>\n",
+              "      <td>RM not sent yet</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>3</th>\n",
+              "      <td>C042FW21M</td>\n",
+              "      <td>RM not sent yet</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "1      Style       Qty status\n",
+              "2  C042FW21M  RM not sent yet\n",
+              "3  C042FW21M  RM not sent yet"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 264
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "31uSpSBoRPWm"
+      },
+      "source": [
+        "df=df.groupby(['Style','Qty status'])['Qty status'].count().rename(\"weightage\")"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "euwhPYFARysJ",
+        "outputId": "94c28601-cd7a-4c5e-baf8-fe0370dff21e"
+      },
+      "source": [
+        "df_tr"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "ID  STATUS   \n",
+              "A   NOT READY    1\n",
+              "    READY        2\n",
+              "B   NOT READY    2\n",
+              "    READY        1\n",
+              "C   NOT READY    1\n",
+              "    READY        2\n",
+              "Name: weightage, dtype: int64"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 266
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "umO9nMvDSlND"
+      },
+      "source": [
+        "df=df / df.groupby(level=0).sum()"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "eMh5RcUYUfDc"
+      },
+      "source": [
+        "df=df.reset_index()"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "orLlX7HlUmZk",
+        "outputId": "a4fcb6bb-eac5-4cd9-8c08-e07c91c69b1d"
+      },
+      "source": [
+        "df.head(5)"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Style</th>\n",
+              "      <th>Qty status</th>\n",
+              "      <th>weightage</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>A003ICONW</td>\n",
+              "      <td>RM not sent yet</td>\n",
+              "      <td>0.900000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>1</th>\n",
+              "      <td>A003ICONW</td>\n",
+              "      <td>Received less</td>\n",
+              "      <td>0.100000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>A004FW21W</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>0.222222</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>3</th>\n",
+              "      <td>A004FW21W</td>\n",
+              "      <td>RM not sent yet</td>\n",
+              "      <td>0.777778</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>4</th>\n",
+              "      <td>A004ICONW</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>0.222222</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "       Style       Qty status  weightage\n",
+              "0  A003ICONW  RM not sent yet   0.900000\n",
+              "1  A003ICONW    Received less   0.100000\n",
+              "2  A004FW21W      Quantity OK   0.222222\n",
+              "3  A004FW21W  RM not sent yet   0.777778\n",
+              "4  A004ICONW      Quantity OK   0.222222"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 269
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "qKG4oW_jWaVP"
+      },
+      "source": [
+        "df=df[df['Qty status']=='Quantity OK']"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "SofAH1GvWOHM"
+      },
+      "source": [
+        "df['>60% Sent']=np.where(df['weightage']>=0.50, 'yes', 'no')"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ryuntu_qYbNz",
+        "outputId": "73409f2e-dedd-439d-9571-bb1184e33b5a"
+      },
+      "source": [
+        "df['>60% Sent'].value_counts()"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "no     119\n",
+              "yes      8\n",
+              "Name: >60% Sent, dtype: int64"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 272
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "AqFGlYQCgP8f"
+      },
+      "source": [
+        "##nom 2"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Snf0Gy1mYr0x"
+      },
+      "source": [
+        "df2=df_Sheet40[['Style','RM ID','Qty status']]"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "jGozncDxcj5W",
+        "outputId": "c0c46a1d-ad45-49e6-899b-ef282b9afb53"
+      },
+      "source": [
+        "df2['new'] = np.where(df2['RM ID'].str.startswith('F'),'Fabric', \n",
+        "                      np.where(df2['RM ID'].str.startswith('P'), 'Packaging', \n",
+        "                                                                          np.where(df2['RM ID'].str.startswith('T'), 'Trims',\n",
+        "                                                                                   np.where(df2['RM ID'].str.startswith('L'), 'Labeling',0))))"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "/usr/local/lib/python3.7/dist-packages/ipykernel_launcher.py:4: SettingWithCopyWarning: \n",
+            "A value is trying to be set on a copy of a slice from a DataFrame.\n",
+            "Try using .loc[row_indexer,col_indexer] = value instead\n",
+            "\n",
+            "See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy\n",
+            "  after removing the cwd from sys.path.\n"
+          ],
+          "name": "stderr"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "PLO7bCtUZGT5"
+      },
+      "source": [
+        "df2=df2[['Style','Qty status','new']]"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "aC3lfGSjggUq"
+      },
+      "source": [
+        "df2=df2[df2['new']=='Fabric']"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "EJg6Ww8GfR9Q"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Xs8VDsGQeeIJ"
+      },
+      "source": [
+        "df2=df2.groupby(['Style','new','Qty status'])['Qty status'].count().rename(\"weightage\")"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "8KYcbj97Yr32"
+      },
+      "source": [
+        "df2 =df2 / df2.groupby(level=0).sum()"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "3w8rz6PxgKsW",
+        "outputId": "37d13107-cdcc-47f8-8825-45676e7bd5df"
+      },
+      "source": [
+        "df2"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "Style       new     Qty status     \n",
+              "A003ICONW   Fabric  RM not sent yet    1.0\n",
+              "A004FW21W   Fabric  RM not sent yet    1.0\n",
+              "A005FW21XU  Fabric  RM not sent yet    1.0\n",
+              "A008FW21X   Fabric  RM not sent yet    1.0\n",
+              "A008ICONX   Fabric  Quantity OK        1.0\n",
+              "                                      ... \n",
+              "UW001ICONW  Fabric  RM not sent yet    1.0\n",
+              "UW006ICONM  Fabric  RM not sent yet    1.0\n",
+              "UW010ICONW  Fabric  RM not sent yet    1.0\n",
+              "UW024ICONW  Fabric  RM not sent yet    1.0\n",
+              "UW030ICONM  Fabric  RM not sent yet    1.0\n",
+              "Name: weightage, Length: 193, dtype: float64"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 279
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "gk-1PXMXf5fV"
+      },
+      "source": [
+        "df2=df2.reset_index()"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "zdfggtPwgHKZ"
+      },
+      "source": [
+        "df2=df2[df2['Qty status']=='Quantity OK']\n"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 675
+        },
+        "id": "vujYSNc6h6w5",
+        "outputId": "5957d3dc-13c8-4a5a-f563-d44afe008114"
+      },
+      "source": [
+        "df2"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Style</th>\n",
+              "      <th>new</th>\n",
+              "      <th>Qty status</th>\n",
+              "      <th>weightage</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>4</th>\n",
+              "      <td>A008ICONX</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>5</th>\n",
+              "      <td>A012FW21W</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>6</th>\n",
+              "      <td>A023ICONX</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>7</th>\n",
+              "      <td>A024FW21WU</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>0.333333</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>14</th>\n",
+              "      <td>A111FW21X</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>...</th>\n",
+              "      <td>...</td>\n",
+              "      <td>...</td>\n",
+              "      <td>...</td>\n",
+              "      <td>...</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>179</th>\n",
+              "      <td>T221FW21W</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>180</th>\n",
+              "      <td>T223FW21WU</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>0.333333</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>182</th>\n",
+              "      <td>T224FW21WU</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>0.333333</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>185</th>\n",
+              "      <td>T226FW21XU</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>187</th>\n",
+              "      <td>T232FW21M</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "<p>68 rows × 4 columns</p>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "          Style     new   Qty status  weightage\n",
+              "4     A008ICONX  Fabric  Quantity OK   1.000000\n",
+              "5     A012FW21W  Fabric  Quantity OK   1.000000\n",
+              "6     A023ICONX  Fabric  Quantity OK   1.000000\n",
+              "7    A024FW21WU  Fabric  Quantity OK   0.333333\n",
+              "14    A111FW21X  Fabric  Quantity OK   1.000000\n",
+              "..          ...     ...          ...        ...\n",
+              "179   T221FW21W  Fabric  Quantity OK   1.000000\n",
+              "180  T223FW21WU  Fabric  Quantity OK   0.333333\n",
+              "182  T224FW21WU  Fabric  Quantity OK   0.333333\n",
+              "185  T226FW21XU  Fabric  Quantity OK   1.000000\n",
+              "187   T232FW21M  Fabric  Quantity OK   1.000000\n",
+              "\n",
+              "[68 rows x 4 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 282
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "CM404a0Eh1Pg"
+      },
+      "source": [
+        "df2['fabricdone']=np.where(df2['weightage']==1,'yes','no')"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 675
+        },
+        "id": "0s_dtC1zhAJM",
+        "outputId": "7230a52a-42e0-4d8a-b9db-2e5aa2a02a39"
+      },
+      "source": [
+        "df2"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Style</th>\n",
+              "      <th>new</th>\n",
+              "      <th>Qty status</th>\n",
+              "      <th>weightage</th>\n",
+              "      <th>fabricdone</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>4</th>\n",
+              "      <td>A008ICONX</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "      <td>yes</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>5</th>\n",
+              "      <td>A012FW21W</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "      <td>yes</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>6</th>\n",
+              "      <td>A023ICONX</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "      <td>yes</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>7</th>\n",
+              "      <td>A024FW21WU</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>0.333333</td>\n",
+              "      <td>no</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>14</th>\n",
+              "      <td>A111FW21X</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "      <td>yes</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>...</th>\n",
+              "      <td>...</td>\n",
+              "      <td>...</td>\n",
+              "      <td>...</td>\n",
+              "      <td>...</td>\n",
+              "      <td>...</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>179</th>\n",
+              "      <td>T221FW21W</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "      <td>yes</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>180</th>\n",
+              "      <td>T223FW21WU</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>0.333333</td>\n",
+              "      <td>no</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>182</th>\n",
+              "      <td>T224FW21WU</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>0.333333</td>\n",
+              "      <td>no</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>185</th>\n",
+              "      <td>T226FW21XU</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "      <td>yes</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>187</th>\n",
+              "      <td>T232FW21M</td>\n",
+              "      <td>Fabric</td>\n",
+              "      <td>Quantity OK</td>\n",
+              "      <td>1.000000</td>\n",
+              "      <td>yes</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "<p>68 rows × 5 columns</p>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "          Style     new   Qty status  weightage fabricdone\n",
+              "4     A008ICONX  Fabric  Quantity OK   1.000000        yes\n",
+              "5     A012FW21W  Fabric  Quantity OK   1.000000        yes\n",
+              "6     A023ICONX  Fabric  Quantity OK   1.000000        yes\n",
+              "7    A024FW21WU  Fabric  Quantity OK   0.333333         no\n",
+              "14    A111FW21X  Fabric  Quantity OK   1.000000        yes\n",
+              "..          ...     ...          ...        ...        ...\n",
+              "179   T221FW21W  Fabric  Quantity OK   1.000000        yes\n",
+              "180  T223FW21WU  Fabric  Quantity OK   0.333333         no\n",
+              "182  T224FW21WU  Fabric  Quantity OK   0.333333         no\n",
+              "185  T226FW21XU  Fabric  Quantity OK   1.000000        yes\n",
+              "187   T232FW21M  Fabric  Quantity OK   1.000000        yes\n",
+              "\n",
+              "[68 rows x 5 columns]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 284
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "rXhKk2_wgEoC"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "4IMDZtRSYr7s"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "7XjIPEjeXIMh"
+      },
+      "source": [
+        "Concateall = gc.open(\"FW21 Nomenclatures Main\").worksheet(\"60percent\")\n",
+        "#df_Concateall = gd.get_as_dataframe(Concateall)\n",
+        "#updated = df_Concateall.append(result)\n",
+        "\n",
+        "gd.set_with_dataframe(Concateall, df)\n",
+        "\n",
+        "Concateall = gc.open(\"FW21 Nomenclatures Main\").worksheet(\"fabricdone\")\n",
+        "#df_Concateall = gd.get_as_dataframe(Concateall)\n",
+        "#updated = df_Concateall.append(result)\n",
+        "\n",
+        "gd.set_with_dataframe(Concateall, df2)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "vvQXMq6ghVhm"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "trfV-6a6HTYP"
+      },
+      "source": [
+        "#df_tr['percent'] = (df_tr['STATUS'].value_counts() / df_tr['STATUS'].count()) * 100"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "_q1MlPdIgsWo"
+      },
+      "source": [
+        "def numpy_where(col_value):\n",
+        "  if len(df[df['A']==col_value]) >=5:\n",
+        "    return col_value\n",
+        "  else:\n",
+        "    return 'etc'\n"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 171
+        },
+        "id": "gJ-unnUghju6",
+        "outputId": "42fefabe-60ec-4feb-dfbc-293fbefd658b"
+      },
+      "source": [
+        "#df['A']= df['A'].apply(make_etc)"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "NameError",
+          "evalue": "ignored",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-4-960aa3fd37cb>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m()\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mdf\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'A'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m=\u001b[0m \u001b[0mdf\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'A'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mapply\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mmake_etc\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;31mNameError\u001b[0m: name 'df' is not defined"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "zvqhbq1_PYNT",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 135
+        },
+        "outputId": "c8f5b92d-c8fb-43f4-caa8-d98b7f3caa50"
+      },
+      "source": [
+        "#state_pcts = df_tr.groupby(level=1).apply(lambda x:100 * x / (x.count()))\n",
+        "#def make_etc(x):\n",
+        "    if len(item_categories[item_categories['category']==x]) >= 5:\n",
+        "        return x\n",
+        "    else:\n",
+        "        return 'etc'\n",
+        "\n",
+        "# Replace with 'etc' if category count is less than 5\n",
+        "#item_categories['category'] = item_categories['category'].apply(make_etc)"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "IndentationError",
+          "evalue": "ignored",
+          "traceback": [
+            "\u001b[0;36m  File \u001b[0;32m\"<ipython-input-1-d6e4fb273ed3>\"\u001b[0;36m, line \u001b[0;32m3\u001b[0m\n\u001b[0;31m    if len(item_categories[item_categories['category']==x]) >= 5:\u001b[0m\n\u001b[0m    ^\u001b[0m\n\u001b[0;31mIndentationError\u001b[0m\u001b[0;31m:\u001b[0m unexpected indent\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "5aihuarJkZcP"
+      },
+      "source": [
+        "import seaborn as sns\n",
+        "import matplotlib as mpl\n",
+        "import matplotlib.pyplot as plt\n",
+        "%matplotlib inline\n",
+        "\n",
+        "mpl.rc('font', size=13)\n",
+        "figure, ax = plt.subplots() \n",
+        "figure.set_size_inches(11, 5)\n",
+        "\n",
+        "# total montly item sales\n",
+        "group_month_sum = all_data.groupby('date_block_num').agg({'item_cnt_month': 'sum'})\n",
+        "group_month_sum = group_month_sum.reset_index()\n",
+        "\n",
+        "sns.barplot(x='date_block_num', y='item_cnt_month', data=group_month_sum)\n",
+        "ax.set(title='Distribution of monthly item counts by date block number',\n",
+        "       xlabel='Date block number', \n",
+        "       ylabel='Monthly item counts');"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "nahLS27KkZfl"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
